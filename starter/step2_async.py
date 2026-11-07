@@ -18,14 +18,33 @@ import asyncio
 from timer import print_time
 
 
-def work(n: int) -> None:
-    ...
+async def work(n: int) -> None:
+  print(f"start {n}")
+  await asyncio.sleep(1)
+  print(f"done {n}")
 
 
-def main() -> None:
-    ...
+# async def main() -> None: #2а
+#   for n in range(1, 11):
+#     await asyncio.sleep(1)
+#     print(f"done {n}")
+#     # print(work(n))          # без await
 
+# async def main() -> None: #2b
+#     coroutines = [work(n) for n in range(1, 11)]
+#     await asyncio.gather(*coroutines)
+#     # print(work(n))          # без await
+
+async def main() -> None:
+    tasks = [asyncio.create_task(work(n)) for n in range(1, 11)]
+    for task in tasks:
+        await task
+'''
+Разница: create_task сразу ставит каждую корутину на выполнение, и мы управляем задачами сам
+(можем отменить, не дожидаться)
+gather запускает кучу корутин и возвращает все результаты списком. Для «запусти всё и дождись» удобнее gather
+'''
 
 if __name__ == "__main__":
     with print_time():
-        main()
+        asyncio.run(main())
